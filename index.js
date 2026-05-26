@@ -1,10 +1,9 @@
-
 require('dotenv').config();
 
 const express = require('express');
 const line = require('@line/bot-sdk');
 const axios = require('axios');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 const app = express();
 
@@ -12,6 +11,8 @@ const config = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.LINE_CHANNEL_SECRET,
 };
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 app.get('/', (req, res) => {
   res.send('OK');
@@ -45,30 +46,13 @@ app.post('/webhook', line.middleware(config), async (req, res) => {
 
         console.log('Image fetched from LINE');
 
-        const transporter = nodemailer.createTransport({
-          host: process.env.MAIL_HOST,
-          port: Number(process.env.MAIL_PORT),
-          secure: false,
-          auth: {
-            user: process.env.MAIL_USER,
-            pass: process.env.MAIL_PASS,
-          },
-        });
+        console.log('Sending email with Resend...');
 
-        console.log('Sending email...');
-
-        await transporter.sendMail({
-          from: process.env.MAIL_USER,
-          to: process.env.TO_EMAIL_1,
-          cc: process.env.TO_EMAIL_2,
+        await resend.emails.send({
+          from: 'onboarding@resend.dev',
+          to: [process.env.TO_EMAIL_1, process.env.TO_EMAIL_2],
           subject: '写真受信',
-          text: '写真が送られてきました',
-          attachments: [
-            {
-              filename: 'photo.jpg',
-              content: Buffer.from(response.data),
-            },
-          ],
+          text: 'LINEから写真が送信されました。',
         });
 
         console.log('Email sent successfully');
