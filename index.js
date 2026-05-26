@@ -49,7 +49,7 @@ app.post('/webhook', line.middleware(config), async (req, res) => {
         console.log('Sending email with Resend...');
 
         await resend.emails.send({
-          from: 'onboarding@resend.dev',
+          from: 'r.h.0.1.2.7.h.a@gmail.com',
           to: [process.env.TO_EMAIL_1, process.env.TO_EMAIL_2],
           subject: '写真受信',
           text: 'LINEから写真が送信されました。',
