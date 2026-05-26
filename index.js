@@ -34,7 +34,7 @@ app.post('/webhook', line.middleware(config), async (req, res) => {
         const messageId = event.message.id;
         console.log('messageId:', messageId);
 
-        const response = await axios.get(
+        await axios.get(
           `https://api-data.line.me/v2/bot/message/${messageId}/content`,
           {
             responseType: 'arraybuffer',
@@ -45,12 +45,13 @@ app.post('/webhook', line.middleware(config), async (req, res) => {
         );
 
         console.log('Image fetched from LINE');
-
+        console.log('TO_EMAIL_1:', process.env.TO_EMAIL_1);
+        console.log('TO_EMAIL_2:', process.env.TO_EMAIL_2);
         console.log('Sending email with Resend...');
 
         await resend.emails.send({
-          from: 'r.h.0.1.2.7.h.a@gmail.com',
-          to: [process.env.TO_EMAIL_1, process.env.TO_EMAIL_2],
+          from: 'Acme <onboarding@resend.dev>',
+          to: [process.env.TO_EMAIL_1, process.env.TO_EMAIL_2].filter(Boolean),
           subject: '写真受信',
           text: 'LINEから写真が送信されました。',
         });
