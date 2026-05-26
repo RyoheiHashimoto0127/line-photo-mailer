@@ -49,14 +49,20 @@ app.post('/webhook', line.middleware(config), async (req, res) => {
         console.log('TO_EMAIL_2:', process.env.TO_EMAIL_2);
         console.log('Sending email with Resend...');
 
-        await resend.emails.send({
+        const result = await resend.emails.send({
           from: 'Acme <onboarding@resend.dev>',
           to: [process.env.TO_EMAIL_1, process.env.TO_EMAIL_2].filter(Boolean),
           subject: '写真受信',
           text: 'LINEから写真が送信されました。',
         });
 
-        console.log('Email sent successfully');
+        console.log('Resend result:', JSON.stringify(result, null, 2));
+
+        if (result.error) {
+          console.error('Resend error:', result.error);
+        } else {
+          console.log('Email sent successfully');
+        }
       }
     }
 
